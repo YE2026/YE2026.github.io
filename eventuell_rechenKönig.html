@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Rechkönig</title>
+<style>
+.anzeige{
+font-size: 30px;
+text-align: center;
+background: #05fcec;
+width: 500px;
+height: 200px;
+border: 20px solid #0928ed;
+border-radius: 40px;
+margin: 30px auto;
+box-shadow: inset 20px 10px 15px #05abf7;
+}
+.zentriert{
+margin: 0px auto;
+text-align: center;
+}
+.ergebnisse{
+font-size: 100px;
+background: white;
+height: 120px;	
+width: 400px;
+padding: 20px;
+box-shadow: 15px 15px 15px grey;
+}
+.gross{
+font-size: 50px;
+}
+hr{
+height: 10px;
+background-color: #000000;
+border: none;
+}
+
+button{
+font-size: 30px;
+color: #ffffff;
+background: #000000;
+}
+</style>
+<script>
+var punkte = 0;
+var runden = -1;
+var level = 1;
+var aktuellesErgebnis;
+var richtigeAntwort;
+
+if(punkte == 0){
+holeSpielStand();
+}
+
+function richtigeAntwort(){
+document.getElementById("richtigAntwort").innerHTML = aktuellesErgebnis;
+}
+
+function stelleAufgabe(){
+
+document.getElementById("eingabe").style.backgroundColor="white";
+document.getElementById("eingabe").value="";
+
+runden++;
+if(punkte>level*5){
+level++;
+}
+
+var ausgabe;
+var ersteZahl = Math.round(Math.random() * (5 * level) + 0.5);
+var zweiteZahl = Math.round(Math.random() * (5 * level) + 0.5);
+var operator = Math.round(Math.random()*4+0.5);
+
+switch (operator){
+case 1:
+ausgabe = ersteZahl+" + "+zweiteZahl;
+aktuellesErgebnis = ersteZahl + zweiteZahl;
+break;
+case 2:
+if(ersteZahl<zweiteZahl){
+var a=ersteZahl;
+ersteZahl=zweiteZahl;
+zweiteZahl=a;
+}
+ausgabe = ersteZahl + " - " + zweiteZahl;
+aktuellesErgebnis = ersteZahl - zweiteZahl;
+break;
+case 3:
+ausgabe = ersteZahl + " * " + zweiteZahl;
+aktuellesErgebnis = ersteZahl * zweiteZahl;
+break;
+case 4:
+var p = ersteZahl * zweiteZahl;
+ausgabe = p + " : " + zweiteZahl;
+aktuellesErgebnis = p / zweiteZahl;
+break;
+default:
+alert();
+}
+
+document.getElementById("Frage").innerHTML=ausgabe;
+document.getElementById("Antworten").innerHTML="Level: "+level+" Punkte: "+punkte+" Runden: " +runden;
+speichereSpielStand();
+}
+
+function pruefeEingabe(){
+
+if(document.getElementById("eingabe").value == "löschen"){
+localStorage.clear();
+punkte = 0;
+runden = -1
+level = 1
+return;
+}
+
+var aktuelleEingabe = document.getElementById("eingabe").value;
+if(aktuelleEingabe==aktuellesErgebnis){
+document.getElementById("eingabe").style.backgroundColor="green";
+richtigeAntwort();
+punkte++;
+}else{
+document.getElementById("eingabe").style.backgroundColor="red";
+richtigeAntwort();
+}
+setTimeout(stelleAufgabe,1000)
+return false;
+}
+
+function speichereSpielStand(){
+localStorage.setItem('punkte',punkte);
+localStorage.setItem('runden',runden);
+localStorage.setItem('level',level);
+}
+
+function holeSpielStand(){
+if(localStorage.getItem('runden') != null){
+punkte = parseInt(localStorage.getItem('punkte'));
+runden = parseInt(localStorage.getItem('runden'));
+level = parseInt(localStorage.getItem('level'));
+}
+}
+
+function neu(){
+localStorage.clear();
+punkte = 0;
+runden = -1
+level = 1
+return;
+}
+
+</script>
+</head>
+<body style="background:gold"> 
+<div onclick="stelleAufgabe();" class="anzeige">
+<p id="Frage">Willkommen beim Kopfrechnen!</p>
+<p id="Antworten">Klicke hier, um zu starten.</p>
+<button type="button" onclick="neu();">Neu</button>
+</div>
+<div class="zentriert">
+<form onsubmit="return pruefeEingabe();">
+<input id="eingabe" class="ergebnisse"type="text" value="eingabe">
+</form>
+</div>
+<br>
+<br>
+<div>
+<hr>
+<p class="zentriert gross">Letzte richtige Antwort:</p>
+<p class="zentriert ergebnisse" id="richtigAntwort">Antwort</p>
+</div>
+</body>
+</html>
